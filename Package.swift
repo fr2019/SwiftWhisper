@@ -12,7 +12,7 @@ whisperExclude.append("coreml")
 metalTargets = [
     .target(name: "ggml_metal",
             exclude: ["CMakeLists.txt"],
-            resources: [.copy("Resources/ggml-metal.metal")],
+            resources: [.copy("Resources")],
             cSettings: [
                 .unsafeFlags(["-fno-objc-arc"]),
                 .headerSearchPath("."),
