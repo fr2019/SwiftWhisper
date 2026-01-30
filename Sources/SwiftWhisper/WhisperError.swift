@@ -9,5 +9,6 @@ public enum WhisperError: Error, Equatable {
     case invalidFrames
     case instanceBusy
     case cancelled
+    case modelLoadFailed
     case cancellationError(WhisperCancellationError)
 }

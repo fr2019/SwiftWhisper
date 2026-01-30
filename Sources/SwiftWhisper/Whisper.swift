@@ -12,15 +12,23 @@ public class Whisper {
     internal var frameCount: Int? // For progress calculation (value not in `whisper_state` yet)
     internal var cancelCallback: (() -> Void)?
 
-    public init(fromFileURL fileURL: URL, withParams params: WhisperParams = .default) {
-        self.whisperContext = fileURL.relativePath.withCString { whisper_init_from_file($0) }
+    public init(fromFileURL fileURL: URL, withParams params: WhisperParams = .default) throws {
+        let ctx = fileURL.relativePath.withCString { ptr in
+            whisper_init_from_file_with_params(ptr, whisper_context_default_params())
+        }
+        guard let ctx else { throw WhisperError.modelLoadFailed }
+        self.whisperContext = ctx
         self.params = params
     }
 
-    public init(fromData data: Data, withParams params: WhisperParams = .default) {
-        var copy = data // Need to copy memory so we can gaurentee exclusive ownership over pointer
+    public init(fromData data: Data, withParams params: WhisperParams = .default) throws {
+        var copy = data // Need to copy memory so we can guarantee exclusive ownership over pointer
 
-        self.whisperContext = copy.withUnsafeMutableBytes { whisper_init_from_buffer($0.baseAddress!, data.count) }
+        let ctx = copy.withUnsafeMutableBytes {
+            whisper_init_from_buffer_with_params($0.baseAddress!, data.count, whisper_context_default_params())
+        }
+        guard let ctx else { throw WhisperError.modelLoadFailed }
+        self.whisperContext = ctx
         self.params = params
     }
 
