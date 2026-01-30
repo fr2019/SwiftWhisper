@@ -28,6 +28,7 @@ let package = Package(
                     .define("GGML_VERSION", to: "\"0.9.4\""),
                     .define("GGML_COMMIT", to: "\"v1.8.2\""),
                     .define("WHISPER_VERSION", to: "\"1.8.2\""),
+                    .define("GGML_USE_CPU"),
                     .define("GGML_USE_ACCELERATE", .when(platforms: [.macOS, .macCatalyst, .iOS])),
                     .define("WHISPER_USE_COREML", .when(platforms: [.macOS, .macCatalyst, .iOS])),
                     .define("WHISPER_COREML_ALLOW_FALLBACK", .when(platforms: [.macOS, .macCatalyst, .iOS])),
