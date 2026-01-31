@@ -12,6 +12,24 @@ public class Whisper {
     internal var frameCount: Int? // For progress calculation (value not in `whisper_state` yet)
     internal var cancelCallback: (() -> Void)?
 
+    // MARK: - Log Callback
+
+    /// Set to receive whisper.cpp log messages. Setting to nil restores default stderr logging.
+    public static var logHandler: ((String) -> Void)? {
+        didSet {
+            if logHandler != nil {
+                whisper_log_set({ (_level, text, _userData) in
+                    guard let text else { return }
+                    let msg = String(cString: text).trimmingCharacters(in: .whitespacesAndNewlines)
+                    guard !msg.isEmpty else { return }
+                    Whisper.logHandler?(msg)
+                }, nil)
+            } else {
+                whisper_log_set(nil, nil)
+            }
+        }
+    }
+
     public init(fromFileURL fileURL: URL, withParams params: WhisperParams = .default) throws {
         let ctx = fileURL.relativePath.withCString { ptr in
             whisper_init_from_file_with_params(ptr, whisper_context_default_params())
